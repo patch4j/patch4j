@@ -13,27 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import io.github.patch4j.configureDetekt
-import io.github.patch4j.configureSpotlessForJvm
-import org.gradle.api.JavaVersion
-import org.gradle.api.Plugin
+package io.github.patch4j
+
+import dev.detekt.gradle.Detekt
+import dev.detekt.gradle.extensions.DetektExtension
 import org.gradle.api.Project
-import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
+import org.gradle.kotlin.dsl.withType
 
-abstract class KotlinConventionPlugin : Plugin<Project> {
-    override fun apply(target: Project) {
-        with(target) {
-            apply(plugin = "org.jetbrains.kotlin.jvm")
-
-            extensions.configure<KotlinJvmExtension> {
-                jvmToolchain(21)
-            }
-
-            configureSpotlessForJvm()
-            configureDetekt()
-        }
+internal fun Project.configureDetekt() {
+    apply(plugin = "dev.detekt")
+    extensions.configure<DetektExtension> {
+        config.setFrom(rootDir.resolve("config/detekt/detekt.yml").path)
+        toolVersion.set(libs.findVersion("detekt").get().requiredVersion)
+        buildUponDefaultConfig.set(true)
+    }
+    tasks.named("check").configure {
+        dependsOn(tasks.withType<Detekt>())
     }
 }

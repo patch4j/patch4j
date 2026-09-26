@@ -37,6 +37,7 @@ repositories {
 dependencies {
     compileOnly(libs.kotlin.gradle.plugin)
     compileOnly(libs.spotless.gradle.plugin)
+    compileOnly(libs.detekt.gradle.plugin)
 }
 
 gradlePlugin {
