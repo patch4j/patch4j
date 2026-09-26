@@ -13,20 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-pluginManagement {
-    repositories {
-        mavenCentral()
-        gradlePluginPortal()
-    }
-}
+import io.github.patch4j.configureSpotlessForRootProject
+import org.gradle.api.Plugin
+import org.gradle.api.Project
 
-dependencyResolutionManagement {
-    versionCatalogs {
-        create("libs") {
-            from(files("../gradle/libs.versions.toml"))
+abstract class RootPlugin : Plugin<Project> {
+    override fun apply(target: Project) {
+        with(target) {
+            configureSpotlessForRootProject()
         }
     }
 }
-
-rootProject.name = "build-logic"
-include(":convention")
