@@ -15,10 +15,9 @@
  */
 import io.github.patch4j.configureDetekt
 import io.github.patch4j.configureSpotlessForJvm
-import org.gradle.api.JavaVersion
+import io.github.patch4j.configureTests
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
@@ -34,6 +33,7 @@ abstract class KotlinConventionPlugin : Plugin<Project> {
 
             configureSpotlessForJvm()
             configureDetekt()
+            configureTests()
         }
     }
 }
