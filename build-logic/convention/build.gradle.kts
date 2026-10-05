@@ -49,6 +49,13 @@ gradlePlugin {
                     .pluginId
             implementationClass = "KotlinConventionPlugin"
         }
+        register("kotlinTestFixtures") {
+            id =
+                libs.plugins.patch4j.test.fixtures
+                    .get()
+                    .pluginId
+            implementationClass = "KotlinTestFixturesConventionPlugin"
+        }
         register("root") {
             id =
                 libs.plugins.patch4j.root

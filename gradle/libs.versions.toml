@@ -18,3 +18,4 @@ detekt = { id = "dev.detekt", version.ref = "detekt" }
 
 patch4j-kotlin = { id = "patch4j.kotlin-convention" }
 patch4j-root = { id = "patch4j.root" }
+patch4j-test-fixtures = { id = "patch4j.test-fixtures" }

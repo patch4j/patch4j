@@ -13,26 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.patch4j
-
+import io.github.patch4j.configureTestFixtures
+import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.tasks.testing.Test
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.withType
 
-internal fun Project.configureTests() {
-    dependencies {
-        "testImplementation"(libs.findLibrary("junit-jupiter").get())
-    }
-    tasks.withType<Test>().configureEach {
-        useJUnitPlatform()
-    }
-}
-
-internal fun Project.configureTestFixtures() {
-    apply(plugin = "java-test-fixtures")
-    dependencies {
-        "testFixturesImplementation"(libs.findLibrary("junit-jupiter-api").get())
+abstract class KotlinTestFixturesConventionPlugin : Plugin<Project> {
+    override fun apply(target: Project) {
+        with(target) {
+            configureTestFixtures()
+        }
     }
 }
