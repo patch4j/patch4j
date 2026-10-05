@@ -13,22 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-pluginManagement {
-    includeBuild("build-logic")
-    repositories {
-        gradlePluginPortal()
-        mavenCentral()
-    }
-}
-dependencyResolutionManagement {
-    repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
-    repositories {
-        mavenCentral()
-    }
-}
+package io.github.patch4j.model
 
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-
-rootProject.name = "patch4j"
-include("core")
-include("model")
+data class FieldPatch(
+    val owner: TypeRef.Object,
+    val fieldName: String,
+    val type: TypeRef,
+    val modifier: Modifier?,
+    val final: Boolean?,
+    val value: Literal?,
+)

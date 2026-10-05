@@ -13,22 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-pluginManagement {
-    includeBuild("build-logic")
-    repositories {
-        gradlePluginPortal()
-        mavenCentral()
+package io.github.patch4j.model.contract
+
+import io.github.patch4j.model.PatchFile
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
+
+abstract class Patch4JParserContract {
+    abstract fun parse(text: String): PatchFile
+
+    @Test
+    fun `parse minimal file with target`() {
+        val result =
+            parse(
+                """
+                target "java"
+                """.trimIndent(),
+            )
+
+        assertEquals("java", result.target)
+        assertTrue(result.classPatches.isEmpty())
     }
 }
-dependencyResolutionManagement {
-    repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
-    repositories {
-        mavenCentral()
-    }
-}
-
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-
-rootProject.name = "patch4j"
-include("core")
-include("model")

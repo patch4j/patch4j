@@ -13,22 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-pluginManagement {
-    includeBuild("build-logic")
-    repositories {
-        gradlePluginPortal()
-        mavenCentral()
-    }
-}
-dependencyResolutionManagement {
-    repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
-    repositories {
-        mavenCentral()
-    }
-}
+package io.github.patch4j.model
 
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+sealed interface Literal
 
-rootProject.name = "patch4j"
-include("core")
-include("model")
+data class StringLiteral(
+    val value: String,
+) : Literal
+
+data class IntLiteral(
+    val value: Int,
+) : Literal
+
+data class LongLiteral(
+    val value: Long,
+) : Literal
+
+data class FloatLiteral(
+    val value: Float,
+) : Literal
+
+data class DoubleLiteral(
+    val value: Double,
+) : Literal
+
+data class BooleanLiteral(
+    val value: Boolean,
+) : Literal

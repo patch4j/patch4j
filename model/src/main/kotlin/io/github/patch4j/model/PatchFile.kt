@@ -13,22 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-pluginManagement {
-    includeBuild("build-logic")
-    repositories {
-        gradlePluginPortal()
-        mavenCentral()
+package io.github.patch4j.model
+
+data class PatchFile(
+    val target: String,
+    val classPatches: List<ClassPatch>,
+    val methodPatches: List<MethodPatch>,
+    val fieldPatches: List<FieldPatch>,
+) {
+    object DefaultTargets {
+        const val JAVA = "java"
     }
 }
-dependencyResolutionManagement {
-    repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
-    repositories {
-        mavenCentral()
-    }
-}
-
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-
-rootProject.name = "patch4j"
-include("core")
-include("model")

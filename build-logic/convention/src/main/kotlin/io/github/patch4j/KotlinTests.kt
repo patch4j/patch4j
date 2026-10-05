@@ -23,7 +23,9 @@ import org.gradle.kotlin.dsl.withType
 
 internal fun Project.configureTests() {
     dependencies {
+        "testImplementation"(platform(libs.findLibrary("junit-bom").get()))
         "testImplementation"(libs.findLibrary("junit-jupiter").get())
+        "testRuntimeOnly"(libs.findLibrary("junit-platform-launcher").get())
     }
     tasks.withType<Test>().configureEach {
         useJUnitPlatform()
@@ -33,6 +35,7 @@ internal fun Project.configureTests() {
 internal fun Project.configureTestFixtures() {
     apply(plugin = "java-test-fixtures")
     dependencies {
+        "testFixturesImplementation"(platform(libs.findLibrary("junit-bom").get()))
         "testFixturesImplementation"(libs.findLibrary("junit-jupiter-api").get())
     }
 }
