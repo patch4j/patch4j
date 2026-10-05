@@ -31,4 +31,5 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "patch4j"
 include("core")
+include("lang")
 include("model")

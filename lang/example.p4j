@@ -1,0 +1,194 @@
+// TargetResolver allows plugging in different languages (CIL, for example)
+// If not defined, Java is used by default
+target "java"
+
+import org.example.app.TargetClass // imports, keeps patches clean
+import my.patches.lib.ExactClass
+
+// shortcut
+make class TargetClass public
+
+patch class TargetClass {
+    access public
+    final false
+
+    // experimental
+    // This functionality requires ExactClass to have exact constructors and overridden methods from the original superclass,
+    // ultimately, making the following graph:
+    // before: T -> S
+    // after: T -> E -> S
+    // where T is TargetClass, E is ExactClass, S is the superclass
+    patch extends ExactClass
+
+    patch field example {
+		access public
+		final false
+    }
+
+    // If the field is ambiguous, the field type is required
+    patch field ambiguous: int {
+		access public
+		final false
+    }
+
+    patch field "constant" {
+		value "another value" // sets the default value
+    }
+
+    // shortcut for modifiers
+    make field example public
+    make field example !final
+
+    // same for methods
+	make method example(String, float): int !final
+
+    // sfield and smethod are introduced to eliminate ambiguity. The JVM can distinguish between the two based
+    // on their modifiers, but the decompiled code will fail to compile.
+    make sfield example !final
+    make smethod example(float, float): int !final
+
+	// Args can be named (optional) for use inside insert{} blocks, if you want to pass them to the function.
+	// To access an argument, use $a
+	// If the method is not static, $this (the class instance) is available
+	patch method argsExample(String a, int): int {
+	}
+
+    // Replaces every string literal occurrence in the whole class
+	replace constant "example.org" with "patched.org"
+
+	patch method example(String a, int): int {
+		access public
+		final false
+
+        // Replaces every string literal occurrence in the method
+		replace constant "example.org" with "patched.org"
+
+        // Insert code at the start of the method
+		after start insert {
+		    // Invoke hooks
+		    // The actual invoke opcode is based on the target method (if unambiguous), or it can be specified explicitly
+		    invoke Subclass.method($a)
+		    invokestatic Subclass.anotherMethod()
+
+		    // If the target method is ambiguous, the descriptor for the return value is required
+		    invoke Subclass.ambiguous($a): void
+		    invoke Subclass.ambiguous($a): int[]
+		}
+
+		// Just invoke a hook (popular use case)
+		after start invoke $this.method()
+
+        // Anchors can be repeated, so you can target every anchor and insert before each one.
+        before every anchor {
+            ireturn | return // OR matching
+        } insert {
+		    invokestatic Subclass.method()
+        }
+
+        // Or you can access a specific anchor
+        before anchor[0] {
+            istore_1
+            bipush 20
+        } insert {
+		    invokestatic Subclass.method()
+        }
+
+        // Backwards indexing
+        before anchor[-1] {
+            istore_1
+            bipush 20
+        } insert {
+		    invokestatic Subclass.method()
+        }
+
+        // Insert between two anchors
+		after anchor {
+		    bipush 10
+		    istore_1
+		    bipush 20
+		    istore_2
+		} and before anchor {
+		    iload_1
+		    iload_2
+		    iadd
+		    ireturn
+		} insert {
+            // Example code that will be inserted between the two blocks of code above
+		}
+
+        // Replaces the first occurrence (a warning will be shown if multiple occurrences are found and the index is not specified)
+		replace anchor {
+		    bipush 10
+		    istore_1
+		    bipush 20
+		    istore_2
+		} with {
+		    invokestatic Subclass.method()
+		}
+
+		replace every anchor {
+		    bipush 10
+		    istore_1
+		    bipush 20
+		    istore_2
+		} with {
+		    invokestatic Subclass.method()
+		}
+
+		// Fine-grained replace
+		using anchor {
+		    bipush 10
+		    istore_1
+		    bipush 20
+		    istore_2
+		} replace {
+		    bipush 20
+		} with {
+		    bipush 30
+		}
+
+	    remove anchor {
+		    bipush 10
+		    istore_1
+		    bipush 20
+		    istore_2
+	    }
+
+	    remove every anchor {
+		    bipush 10
+		    istore_1
+		    bipush 20
+		    istore_2
+	    }
+
+	    // Fine-grained remove
+	    using anchor {
+		    bipush 10
+		    istore_1
+		    bipush 20
+		    istore_2
+	    } remove {
+	        bipush 10
+	        istore_1
+	    }
+	}
+
+	// The same functionality for constructors
+	patch constructor() {
+
+	}
+
+	patch clinit {
+
+	}
+}
+
+// Shortcut
+patch field TargetClass.exampleField {
+    value "another"
+}
+
+// Shortcut
+patch method TargetClass.anotherExample(String, int): int {
+
+}

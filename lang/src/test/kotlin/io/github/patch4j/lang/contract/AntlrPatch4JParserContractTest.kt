@@ -13,10 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    alias(libs.plugins.patch4j.kotlin)
-}
+package io.github.patch4j.lang.contract
 
-dependencies {
-    api(projects.model)
+import io.github.patch4j.lang.patchFileOf
+import io.github.patch4j.model.PatchFile
+import io.github.patch4j.model.contract.Patch4JParserContract
+
+class AntlrPatch4JParserContractTest : Patch4JParserContract() {
+    override fun parse(text: String): PatchFile =
+        patchFileOf(
+            inputStream = text.byteInputStream(),
+        )
 }
