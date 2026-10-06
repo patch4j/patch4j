@@ -13,11 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.patch4j.model
+package io.github.patch4j.lang
 
-enum class Modifier {
-    Public,
-    Package,
-    Protected,
-    Private,
+import io.github.patch4j.lang.generated.Patch4JBaseVisitor
+import io.github.patch4j.lang.generated.Patch4JParser
+import io.github.patch4j.model.Replacement
+
+internal object ReplacementStatementVisitor : Patch4JBaseVisitor<Replacement?>() {
+    override fun defaultResult() = null
+
+    override fun visitReplaceConstantDecl(ctx: Patch4JParser.ReplaceConstantDeclContext): Replacement {
+        val (from, to) = ctx.literal().mapNotNull(LiteralVisitor::visit)
+
+        return Replacement(
+            from = from,
+            to = to,
+        )
+    }
 }

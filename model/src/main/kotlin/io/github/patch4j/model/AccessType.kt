@@ -15,9 +15,9 @@
  */
 package io.github.patch4j.model
 
-data class FieldPatch(
-    val fieldRef: FieldRef,
-    val accessType: AccessType?,
-    val final: Boolean?,
-    val value: Literal?,
-)
+enum class AccessType {
+    Public,
+    Package,
+    Protected,
+    Private,
+}

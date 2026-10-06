@@ -29,6 +29,12 @@ internal fun Project.configureDetekt() {
         toolVersion.set(libs.findVersion("detekt").get().requiredVersion)
         buildUponDefaultConfig.set(true)
     }
+    val projectDir = projectDir
+    tasks.withType<Detekt>().configureEach {
+        exclude {
+            it.file.relativeTo(projectDir).startsWith("build")
+        }
+    }
     tasks.named("check").configure {
         dependsOn(tasks.withType<Detekt>())
     }

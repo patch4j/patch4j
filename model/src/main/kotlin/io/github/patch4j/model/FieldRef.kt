@@ -15,9 +15,20 @@
  */
 package io.github.patch4j.model
 
-data class FieldPatch(
-    val fieldRef: FieldRef,
-    val accessType: AccessType?,
-    val final: Boolean?,
-    val value: Literal?,
-)
+data class FieldRef(
+    val owner: TypeRef.Object,
+    val name: String,
+    val type: TypeRef?,
+    val isStatic: Boolean,
+) {
+    val descriptor: String =
+        buildString {
+            append(owner.descriptor)
+            append('.')
+            append(name)
+            if (type != null) {
+                append(':')
+                append(type.descriptor)
+            }
+        }
+}

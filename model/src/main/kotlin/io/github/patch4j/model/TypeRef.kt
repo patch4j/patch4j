@@ -16,53 +16,42 @@
 package io.github.patch4j.model
 
 sealed interface TypeRef {
-    enum class Primitive : TypeRef {
-        Integer,
-        Long,
-        Float,
-        Double,
-        Boolean,
-        Short,
-        Byte,
-        Char,
-        Void,
+    val descriptor: String
+
+    enum class Primitive(
+        override val descriptor: String,
+    ) : TypeRef {
+        Integer("I"),
+        Long("J"),
+        Float("F"),
+        Double("D"),
+        Boolean("Z"),
+        Short("S"),
+        Byte("B"),
+        Char("C"),
+        Void("V"),
     }
 
     data class Array(
         val elementType: TypeRef,
-    ) : TypeRef
+    ) : TypeRef {
+        override val descriptor =
+            buildString {
+                var current: TypeRef = this@Array
+
+                while (current is Array) {
+                    append('[')
+                    current = current.elementType
+                }
+
+                append(current.descriptor)
+            }
+    }
 
     data class Object(
         val name: String,
         val qualifiedName: String,
-    ) : TypeRef
-}
-
-val TypeRef.descriptor: String
-    get() {
-        val stringBuilder = StringBuilder()
-        var current = this
-
-        while (current is TypeRef.Array) {
-            stringBuilder.append('[')
-            current = current.elementType
-        }
-
-        val descriptor =
-            when (current) {
-                TypeRef.Primitive.Integer -> "I"
-                TypeRef.Primitive.Long -> "J"
-                TypeRef.Primitive.Float -> "F"
-                TypeRef.Primitive.Double -> "D"
-                TypeRef.Primitive.Boolean -> "Z"
-                TypeRef.Primitive.Short -> "S"
-                TypeRef.Primitive.Byte -> "B"
-                TypeRef.Primitive.Char -> "C"
-                TypeRef.Primitive.Void -> "V"
-                is TypeRef.Object -> "L${current.qualifiedName};"
-            }
-
-        stringBuilder.append(descriptor)
-
-        return stringBuilder.toString()
+    ) : TypeRef {
+        override val descriptor: String = "L$qualifiedName;"
     }
+}

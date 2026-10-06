@@ -15,23 +15,21 @@ importDecl
 // Top level
 
 topLevelDecl
-    : patchClassDecl
-    | makeDecl
-    | patchMethodDecl
-    | patchFieldDecl
+    : patchClassDecl  # TopLevelPatchClassDeclaration
+    | makeDecl        # TopLevelMakeDeclaration
+    | patchMethodDecl # TopLevelPatchMethodDeclaration
+    | patchFieldDecl  # TopLevelPatchFieldDeclaration
     ;
 
 makeDecl
-    : MAKE CLASS         qualifiedName modifierShortcut+
-    | MAKE FIELD         fieldName     modifierShortcut+
-    | MAKE STATIC_FIELD  fieldName     modifierShortcut+
-    | MAKE METHOD        methodName    modifierShortcut+
-    | MAKE STATIC_METHOD methodName    modifierShortcut+
+    : MAKE CLASS qualifiedName modifierShortcut+ #MakeClassDeclaration
+    | MAKE fieldName           modifierShortcut+ #MakeFieldDeclaration
+    | MAKE methodName          modifierShortcut+ #MakeMethodDeclaration
     ;
 
 modifierShortcut
-    : modifier
-    | finalToggle
+    : modifier    #AccessModifierShortcut
+    | finalToggle #FinalToggleModifierShortcut
     ;
 
 patchClassDecl
@@ -45,18 +43,30 @@ patchClassBlock
 // Class level
 
 classModifier
-    : accessModifier
-    | finalModifier
+    : accessModifier # ClassAccessModifier
+    | finalModifier  # ClassFinalModifier
+    ;
+
+methodModifier
+    : accessModifier # MethodAccessModifier
+    | finalModifier  # MethodFinalModifier
+    ;
+
+fieldModifier
+    : accessModifier # FieldAccessModifier
+    | finalModifier  # FieldFinalModifier
+    | valueModifier  # FieldValueModifier
     ;
 
 patchClassLevelStatement
-    : patchFieldDecl
-    | patchMethodDecl
-    | patchConstructorDecl
-    | patchClinitDecl
-    | patchExtendsDecl
-    | makeDecl
-    | replaceConstantDecl
+    : patchFieldDecl       # ClassLevelPatchFieldDeclaration
+    | patchMethodDecl      # ClassLevelPatchMethodDeclaration
+    | patchConstructorDecl # ClassLevelPatchConstructorDeclaration
+    | patchClinitDecl      # ClassLevelPatchClinitDeclaration
+    | patchExtendsDecl     # ClassLevelPatchExtendsDeclaration
+    | makeDecl             # ClassLevelMakeDeclaration
+    | replaceConstantDecl  # ClassLevelReplaceConstantDeclaration
+    | patchClassDecl       # ClassLevelPatchClassDeclaration
     ;
 
 patchExtendsDecl
@@ -76,15 +86,15 @@ replaceConstantDecl
     ;
 
 patchFieldDecl
-    : PATCH FIELD fieldName (COLON typeName)? patchFieldBlock
+    : PATCH fieldName patchFieldBlock
     ;
 
 patchMethodDecl
-    : PATCH METHOD methodName patchMethodBlock
+    : PATCH methodName patchMethodBlock
     ;
 
 methodName
-    : qualifiedName LPAREN params=parameterList? RPAREN (COLON returnType=typeName)?
+    : (METHOD | STATIC_METHOD) qualifiedName LPAREN params=parameterList? RPAREN (COLON returnType=typeName)?
     ;
 
 parameterList
@@ -100,8 +110,7 @@ typeName
     ;
 
 fieldName
-    : qualifiedName
-    | STRING
+    : (FIELD | STATIC_FIELD) qualifiedName (COLON typeName)?
     ;
 
 patchFieldBlock
@@ -110,17 +119,6 @@ patchFieldBlock
 
 patchMethodBlock
     : LBRACE methodModifier* RBRACE
-    ;
-
-methodModifier
-    : accessModifier
-    | finalModifier
-    ;
-
-fieldModifier
-    : accessModifier
-    | finalModifier
-    | valueModifier
     ;
 
 valueModifier
@@ -141,24 +139,22 @@ modifier
     : PUBLIC | PRIVATE | PROTECTED
     ;
 
-finalModifier
-    : FINAL booleanLiteral
-    ;
-
 finalToggle
     : BANG? FINAL
     ;
 
-booleanLiteral
-    : TRUE | FALSE
+finalModifier
+    : FINAL BOOLEAN
     ;
 
 literal
-    : STRING | INT | booleanLiteral
+    : STRING  # StringLiteral
+    | INT     # IntLiteral
+    | BOOLEAN # BooleanLiteral
     ;
 
 primitiveType
-    : VOID | BOOLEAN | BYTE | CHAR | SHORT | INT_T | LONG | FLOAT_T | DOUBLE
+    : VOID | BOOLEAN_T | BYTE | CHAR | SHORT | INT_T | LONG | FLOAT_T | DOUBLE
     ;
 
 // Keywords
@@ -184,8 +180,6 @@ PRIVATE       : 'private'     ;
 PROTECTED     : 'protected'   ;
 FINAL         : 'final'       ;
 STATIC        : 'static'      ;
-TRUE          : 'true'        ;
-FALSE         : 'false'       ;
 AFTER         : 'after'       ;
 BEFORE        : 'before'      ;
 EVERY         : 'every'       ;
@@ -197,15 +191,15 @@ AND           : 'and'         ;
 REMOVE        : 'remove'      ;
 USING         : 'using'       ;
 
-VOID    : 'void'    ;
-BOOLEAN : 'boolean' ;
-BYTE    : 'byte'    ;
-CHAR    : 'char'    ;
-SHORT   : 'short'   ;
-INT_T   : 'int'     ;
-LONG    : 'long'    ;
-FLOAT_T : 'float'   ;
-DOUBLE  : 'double'  ;
+VOID      : 'void'    ;
+BOOLEAN_T : 'boolean' ;
+BYTE      : 'byte'    ;
+CHAR      : 'char'    ;
+SHORT     : 'short'   ;
+INT_T     : 'int'     ;
+LONG      : 'long'    ;
+FLOAT_T   : 'float'   ;
+DOUBLE    : 'double'  ;
 
 // Punctuation
 LBRACE      : '{' ;
@@ -225,6 +219,7 @@ VARIABLE : '$' ID;
 // Literals
 STRING      : '"' (~["\\\r\n] | '\\' .)* '"' ;
 INT         : [0-9]+ ;
+BOOLEAN     : 'true' | 'false' ;
 
 // Identifiers
 ID          : [a-zA-Z_] [a-zA-Z0-9_]* ;

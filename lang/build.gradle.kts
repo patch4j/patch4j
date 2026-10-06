@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import com.strumenta.antlrkotlin.gradle.AntlrKotlinTask
+import dev.detekt.gradle.Detekt
 
 plugins {
     alias(libs.plugins.patch4j.kotlin)

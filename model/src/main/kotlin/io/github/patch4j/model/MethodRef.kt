@@ -15,9 +15,25 @@
  */
 package io.github.patch4j.model
 
-data class FieldPatch(
-    val fieldRef: FieldRef,
-    val accessType: AccessType?,
-    val final: Boolean?,
-    val value: Literal?,
-)
+data class MethodRef(
+    val owner: TypeRef.Object,
+    val name: String,
+    val parameters: List<TypeRef>,
+    val returnTypeRef: TypeRef?,
+    val isStatic: Boolean,
+) {
+    val descriptor: String =
+        buildString {
+            append(owner.qualifiedName)
+            append('.')
+            append(name)
+            append(":(")
+            parameters.forEach {
+                append(it.descriptor)
+            }
+            append(')')
+            if (returnTypeRef != null) {
+                append(returnTypeRef.descriptor)
+            }
+        }
+}

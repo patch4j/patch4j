@@ -3,3 +3,13 @@ config:
   warningsAsErrors: false
   checkExhaustiveness: false
   excludes: []
+
+naming:
+  FunctionNaming:
+    active: true
+    excludes: [ '**/test/**', '**/testFixtures/**' ]
+
+style:
+  MaxLineLength:
+    active: true
+    maxLineLength: 140

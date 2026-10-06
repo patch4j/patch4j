@@ -17,7 +17,7 @@ package io.github.patch4j.model
 
 data class ClassPatch(
     val type: TypeRef.Object,
-    val modifier: Modifier?,
+    val accessType: AccessType?,
     val final: Boolean?,
     val replacements: Set<Replacement>,
 )

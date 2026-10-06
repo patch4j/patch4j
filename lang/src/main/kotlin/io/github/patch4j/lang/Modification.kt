@@ -13,11 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.patch4j.model
+package io.github.patch4j.lang
 
-data class FieldPatch(
-    val fieldRef: FieldRef,
-    val accessType: AccessType?,
-    val final: Boolean?,
-    val value: Literal?,
-)
+import io.github.patch4j.model.AccessType
+import io.github.patch4j.model.Literal
+
+internal sealed interface Modification {
+    data class Access(
+        val type: AccessType,
+    ) : Modification
+
+    data class DefaultValue(
+        val value: Literal,
+    ) : Modification
+
+    data class SetFinal(
+        val final: Boolean,
+    ) : Modification
+}

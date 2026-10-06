@@ -21,20 +21,23 @@ sealed interface MethodPatch {
     val parameters: List<TypeRef>
 
     data class Method(
-        override val owner: TypeRef.Object,
         override val replacements: Set<Replacement>,
-        override val parameters: List<TypeRef>,
-        val isStatic: Boolean,
-        val returnValue: TypeRef,
-        val modifier: Modifier?,
+        val methodRef: MethodRef,
+        val accessType: AccessType?,
         val final: Boolean?,
-    ) : MethodPatch
+    ) : MethodPatch {
+        override val owner: TypeRef.Object
+            get() = methodRef.owner
+
+        override val parameters: List<TypeRef>
+            get() = methodRef.parameters
+    }
 
     data class Constructor(
         override val owner: TypeRef.Object,
         override val replacements: Set<Replacement>,
         override val parameters: List<TypeRef>,
-        val modifier: Modifier?,
+        val accessType: AccessType?,
     ) : MethodPatch
 
     data class ClassInit(

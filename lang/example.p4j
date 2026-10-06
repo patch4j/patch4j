@@ -31,8 +31,14 @@ patch class TargetClass {
 		final false
     }
 
-    patch field "constant" {
+    patch field constant: String {
 		value "another value" // sets the default value
+    }
+
+    patch field interceptable: double {
+        // cannot handle reflection writes/reads
+        redirect write to StaticHooks.handleFieldAssign(double, double): double
+        redirect read to StaticHooks.handleFieldRead(double): double
     }
 
     // shortcut for modifiers
@@ -181,6 +187,20 @@ patch class TargetClass {
 	patch clinit {
 
 	}
+}
+
+make public {
+    method TargetClass.anotherExample(String, int): int
+    smethod ExactClass.example(): void
+    class TargetClass
+    class ExactClass
+    class com.example.app.AnotherClass
+    field ExactClass.field: String
+    field TargetClass.constant: int
+}
+
+make public {
+    class ExactClass.* // class, all its methods and fields
 }
 
 // Shortcut
